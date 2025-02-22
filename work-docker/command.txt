@@ -1,0 +1,106 @@
+docker build -t my_tensorflow_image .
+
+Sending build context to Docker daemon  1.858MB
+Step 1/4 : FROM gcr.io/deeplearning-platform-release/tf2-cpu.2-11.py310@sha256:1337b180d99ceb024c3a52854947811703e7265244522cfc69aeed0b55a45154
+ ---> 8f96c59eb91b
+Step 2/4 : WORKDIR /app
+ ---> Running in 524ba1719673
+Removing intermediate container 524ba1719673
+ ---> 9946a043f4d8
+Step 3/4 : COPY . /app
+ ---> f5f400478e2a
+Step 4/4 : ENTRYPOINT  ["python", "lstm_test.py"]
+ ---> Running in 35f7adb2d83f
+Removing intermediate container 35f7adb2d83f
+ ---> 055baeb1b801
+Successfully built 055baeb1b801
+Successfully tagged my_tensorflow_image:latest
+
+
+
+sudo docker images
+REPOSITORY                                                TAG       IMAGE ID       CREATED          SIZE
+my_tensorflow_image                                       latest    055baeb1b801   45 seconds ago   7.71GB
+gcr.io/deeplearning-platform-release/tf2-cpu.2-11.py310   <none>    8f96c59eb91b   15 months ago    7.7GB
+
+
+docker run -v $local_data_path:/mnt/data/:ro -v $local_output_path:/mnt/output/ --network none my_tensorflow_image
+
+2025-02-08 03:29:27.577293: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-02-08 03:29:27.737385: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:
+2025-02-08 03:29:27.737424: I tensorflow/compiler/xla/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2025-02-08 03:29:31.153070: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:
+2025-02-08 03:29:31.153321: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:
+2025-02-08 03:29:31.153352: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2025-02-08 03:29:37.332755: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:
+2025-02-08 03:29:37.332797: W tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:265] failed call to cuInit: UNKNOWN ERROR (303)
+2025-02-08 03:29:37.332827: I tensorflow/compiler/xla/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (ba3a20ef240b): /proc/driver/nvidia/version does not exist
+2025-02-08 03:29:37.333223: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ lstm (LSTM)                 (None, 10, 64)            17152     
+                                                                 
+ lstm_1 (LSTM)               (None, 32)                12416     
+                                                                 
+ repeat_vector (RepeatVector  (None, 10, 32)           0         
+ )                                                               
+                                                                 
+ lstm_2 (LSTM)               (None, 10, 32)            8320      
+                                                                 
+ lstm_3 (LSTM)               (None, 10, 64)            24832     
+                                                                 
+ time_distributed (TimeDistr  (None, 10, 2)            130       
+ ibuted)                                                         
+                                                                 
+=================================================================
+Total params: 62,850
+Trainable params: 62,850
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/20
+138/138 [==============================] - 8s 23ms/step - loss: 0.1425 - val_loss: 0.0889
+Epoch 2/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0854 - val_loss: 0.0806
+Epoch 3/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0778 - val_loss: 0.0732
+Epoch 4/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0722 - val_loss: 0.0684
+Epoch 5/20
+138/138 [==============================] - 3s 19ms/step - loss: 0.0650 - val_loss: 0.0554
+Epoch 6/20
+138/138 [==============================] - 3s 19ms/step - loss: 0.0562 - val_loss: 0.0513
+Epoch 7/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0503 - val_loss: 0.0446
+Epoch 8/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0453 - val_loss: 0.0447
+Epoch 9/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0408 - val_loss: 0.0366
+Epoch 10/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0381 - val_loss: 0.0336
+Epoch 11/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0367 - val_loss: 0.0320
+Epoch 12/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0309 - val_loss: 0.0286
+Epoch 13/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0327 - val_loss: 0.0291
+Epoch 14/20
+138/138 [==============================] - 3s 19ms/step - loss: 0.0275 - val_loss: 0.0264
+Epoch 15/20
+138/138 [==============================] - 3s 19ms/step - loss: 0.0252 - val_loss: 0.0277
+Epoch 16/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0226 - val_loss: 0.0215
+Epoch 17/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0206 - val_loss: 0.0179
+Epoch 18/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0174 - val_loss: 0.0160
+Epoch 19/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0189 - val_loss: 0.0162
+Epoch 20/20
+138/138 [==============================] - 3s 18ms/step - loss: 0.0160 - val_loss: 0.0148
+44/44 [==============================] - 1s 6ms/step
+Threshold: 0.05086710950055396
+Number of anomalies detected: 69
